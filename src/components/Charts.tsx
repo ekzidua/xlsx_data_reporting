@@ -12,7 +12,7 @@ import {
   ArcElement,
 } from 'chart.js';
 import { AnalyticsData } from '../types/financial';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 ChartJS.register(
   CategoryScale,
@@ -35,7 +35,20 @@ export const Charts: React.FC<ChartsProps> = ({ analytics, onChartsReady }) => {
   const timeChartRef = useRef<any>(null);
   const categoryChartRef = useRef<any>(null);
   const correspondentChartRef = useRef<any>(null);
-  const isDarkMode = document.documentElement.classList.contains('dark');
+  const [isDarkMode, setIsDarkMode] = useState(document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -181,7 +194,8 @@ export const Charts: React.FC<ChartsProps> = ({ analytics, onChartsReady }) => {
           'rgba(168, 85, 247, 0.8)',
           'rgba(156, 163, 175, 0.8)',
         ],
-        borderWidth: 1,
+        borderColor: isDarkMode ? 'rgba(55, 65, 81, 1)' : 'rgba(255, 255, 255, 1)',
+        borderWidth: 2,
       },
     ],
   };
